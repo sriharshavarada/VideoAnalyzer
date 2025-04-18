@@ -1,21 +1,25 @@
-FROM n8nio/n8n
+from youtube_transcript_api import YouTubeTranscriptApi
+import sys
+import json
 
-USER root
+video_id = sys.argv[1]
 
-# Install Python and required system dependencies
-RUN apk add --no-cache \
-  python3 \
-  py3-pip \
-  build-base \
-  libffi-dev \
-  openssl-dev \
-  cargo \
-  rust
+# Prioritize English, then Telugu, Hindi, Kannada, Tamil, etc.
+preferred_languages = ['en', 'te', 'hi', 'kn', 'ta']
 
-# Install the YouTube Transcript API with override flag (PEP 668 fix)
-RUN python3 -m pip install --break-system-packages youtube-transcript-api
+# ✅ Add a working proxy (can rotate/test others later)
+proxies = {
+    'http': 'http://103.180.142.102:8080',
+    'https': 'http://103.180.142.102:8080'
+}
 
-# Copy your script to a known path
-COPY get_YouTubeTranscript.py /scripts/get_transcript.py
-
-USER node
+try:
+    transcript = YouTubeTranscriptApi.get_transcript(
+        video_id,
+        languages=preferred_languages,
+        proxies=proxies  # 🆕 Add this line
+    )
+    text = ' '.join([entry['text'] for entry in transcript])
+    print(json.dumps({ "transcript": text }))
+except Exception as e:
+    print(json.dumps({ "error": str(e) }))
