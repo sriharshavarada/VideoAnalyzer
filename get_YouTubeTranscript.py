@@ -52,8 +52,23 @@ try:
         raise Exception("No baseUrl in selected track")
 
     # Step 5: Fetch transcript
-    transcript_response = requests.get(f"https://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={base_url}")
+import traceback
+
+transcript_url = f"https://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={base_url}"
+transcript_response = requests.get(transcript_url)
+
+try:
+    # If not JSON, will raise
     transcript_data = transcript_response.json()
+except Exception:
+    print(json.dumps({
+        "error": "Transcript API did not return valid JSON.",
+        "status": transcript_response.status_code,
+        "url": transcript_url,
+        "text_sample": transcript_response.text[:300]  # small preview
+    }))
+    sys.exit(1)
+
 
     # Step 6: Extract text
     lines = [
