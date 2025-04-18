@@ -9,8 +9,8 @@ preferred_languages = ['en', 'te', 'hi', 'kn', 'ta']
 
 # ✅ Add a working proxy (can rotate/test others later)
 proxies = {
-    'http': 'http://103.180.142.102:8080',
-    'https': 'http://103.180.142.102:8080'
+    'http': 'http://103.179.109.62:8080',
+    'https': 'http://103.179.109.62:8080'
 }
 
 try:
